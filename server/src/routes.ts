@@ -22,41 +22,57 @@ routes.post('/classes', async (request, response) => {
         schedule
     } = request.body;
 
-    //registro de usuário
-    const insertedUsersIds = await db('users').insert({
-        name,
-        avatar,
-        whatsapp,
-        bio
-    });
+    //transaction
+    const trx = await db.transaction();
 
-    //id inserido
-    const user_id = insertedUsersIds[0];
+    try{
+        //registro de usuário
+        const insertedUsersIds = await trx('users').insert({
+            name,
+            avatar,
+            whatsapp,
+            bio
+        });
 
-    //inserir aulas
-    const insertedClassesIds = await db('classes').insert({
-        subject,
-        cost,
-        user_id,
-    });
+        //id inserido
+        const user_id = insertedUsersIds[0];
 
-    //id inserido da aula
-    const class_id = insertedClassesIds[0];
+        //inserir aulas
+        const insertedClassesIds = await trx('classes').insert({
+            subject,
+            cost,
+            user_id,
+        });
 
-    //percorrer e formatar objetos
-    const classSchedule = schedule.map((scheduleItem: ScheduleItem) => {
-        return {
-            class_id,
-            week_day: scheduleItem.week_day,
-            from: convertHourToMinutes(scheduleItem.from),
-            to: convertHourToMinutes(scheduleItem.to),
-        };
-    })
+        //id inserido da aula
+        const class_id = insertedClassesIds[0];
 
-    //inserir na tabela
-    await db('class_schedule').insert(classSchedule);
+        //percorrer e formatar objetos
+        const classSchedule = schedule.map((scheduleItem: ScheduleItem) => {
+            return {
+                class_id,
+                week_day: scheduleItem.week_day,
+                from: convertHourToMinutes(scheduleItem.from),
+                to: convertHourToMinutes(scheduleItem.to),
+            };
+        })
 
-    return response.send();
+        //inserir na tabela
+        await trx('class_schedule').insert(classSchedule);
+
+        //finalmente fazer alterações
+        await trx.commit();
+
+        return response.status(201).send();
+
+    } catch (err) {
+        //desfazer error no banco se tiver
+        await trx.rollback();
+
+        return response.status(400).json({
+            error: 'Unexpected error while creating new class'
+        })
+    }
 });
 
 export default routes;
