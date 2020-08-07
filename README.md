@@ -46,3 +46,13 @@ Proffy
  ### - Mobile page view
 * [Click this link](https://www.figma.com/file/e33KvgUpFdunXxJjHnK7CG/Proffy-Mobile) to see all mobile screens.
 
+<br>
+
+## The backend :sunglasses:
+ 
+ ### - Technologies used on backend
+* [NodeJs](https://nodejs.org/en/)
+* [TypeScript](https://www.typescriptlang.org/)
+* [Express](https://expressjs.com/pt-br/)
+* [Knex](http://knexjs.org/)
+* [SQLite](https://www.sqlite.org/)
