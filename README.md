@@ -1,6 +1,6 @@
-<h1 align="center"> 
-Proffy
-</h1>
+<p align="center"> 
+ <img src="https://github.com/ro-drigo/proffy/blob/master/mobile/assets/proffy.png"><br>
+</p>
 
 <h4 align="center"> 
 :rocket: NLW #2
